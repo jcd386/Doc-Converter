@@ -153,6 +153,31 @@
     <apiVersion>66.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
     <decisions>
+        <name>Check_Access</name>
+        <label>Check Access</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Access_Denied_Screen</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No Access</defaultConnectorLabel>
+        <rules>
+            <name>Has_Access</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Permission.WSM_Doc_Converter_Access</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Related_Files</targetReference>
+            </connector>
+            <label>Has Access</label>
+        </rules>
+    </decisions>
+    <decisions>
         <name>Check_Success</name>
         <label>Check Success</label>
         <locationX>0</locationX>
@@ -266,6 +291,30 @@
         <object>ContentDocumentLink</object>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
+    <screens>
+        <name>Access_Denied_Screen</name>
+        <label>Access Denied</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>Access_Denied_Message</name>
+            <fieldText>&lt;p style=&quot;text-align: center;&quot;&gt;&lt;br&gt;&lt;/p&gt;&lt;p style=&quot;text-align: center;&quot;&gt;&lt;b style=&quot;color: rgb(194, 57, 52); font-size: 16px;&quot;&gt;Access Denied&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;text-align: center;&quot;&gt;&lt;br&gt;&lt;/p&gt;&lt;p style=&quot;text-align: center;&quot;&gt;You do not have permission to use the Document Converter.&lt;/p&gt;&lt;p style=&quot;text-align: center;&quot;&gt;Please request the &lt;b&gt;WSM Doc Converter&lt;/b&gt; permission set from your administrator.&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
     <screens>
         <name>Doc_Converter_Screen</name>
         <label>Configure Conversion</label>
@@ -513,7 +562,7 @@
         <locationX>0</locationX>
         <locationY>0</locationY>
         <connector>
-            <targetReference>Get_Related_Files</targetReference>
+            <targetReference>Check_Access</targetReference>
         </connector>
     </start>
     <status>Draft</status>

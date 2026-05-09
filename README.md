@@ -68,7 +68,9 @@ sf project deploy start --target-org YOUR_ORG_ALIAS
 
 3. **Activate the Flow** — The Flow deploys in Draft status. Activate it after setting the variables.
 
-4. **Create a Quick Action** — Add a Screen Flow action on your target object (Account, Opportunity, etc.) that launches `WSM - SCR - Convert Documents` and passes `recordId`.
+4. **Assign the Permission Set** — Assign `WSM Doc Converter` to users who need access. The Flow checks for the `WSM_Doc_Converter_Access` custom permission and shows an "Access Denied" screen if the user doesn't have it.
+
+5. **Create a Quick Action** — Add a Screen Flow action on your target object (Account, Opportunity, etc.) that launches `WSM - SCR - Convert Documents` and passes `recordId`.
 
 ## How It Works
 
@@ -100,6 +102,8 @@ The Apex class (`WSM_DocConverterService`) handles OAuth internally via `client_
 | `WSM_SCR_Convert_Documents.flow-meta.xml` | Screen Flow: end-to-end orchestration |
 | `Doc_Converter_Endpoint.remoteSite-meta.xml` | Remote Site Setting for the conversion API |
 | `Salesforce_Login.remoteSite-meta.xml` | Remote Site Setting for OAuth token exchange |
+| `WSM_Doc_Converter_Access.customPermission-meta.xml` | Custom permission for access control |
+| `WSM_Doc_Converter.permissionset-meta.xml` | Permission set bundling Apex + custom permission |
 
 ## Author
 
