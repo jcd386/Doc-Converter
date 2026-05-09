@@ -1,0 +1,122 @@
+:host {
+    display: block;
+}
+
+/* Card */
+.converter-card {
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Table column widths */
+.col-position {
+    width: 2.5rem;
+    text-align: center;
+}
+
+.col-document {
+    /* flex: takes remaining width */
+}
+
+.col-type {
+    width: 9rem;
+}
+
+.col-size {
+    width: 5.5rem;
+    text-align: right;
+}
+
+.col-actions {
+    width: 7.5rem;
+}
+
+/* Position number styling */
+.position-cell {
+    text-align: center;
+}
+
+.position-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    background-color: #f3f3f3;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #444;
+}
+
+/* Size column right-aligned */
+.size-cell {
+    text-align: right;
+    color: #706e6b;
+    font-size: 0.8125rem;
+}
+
+/* Row hover */
+.doc-row {
+    transition: background-color 0.12s ease;
+}
+
+/* Type Pills */
+.type-pill {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+}
+
+.type-pill_pdf {
+    background-color: #e8f4e8;
+    color: #2e844a;
+}
+
+.type-pill_convert {
+    background-color: #e8f0fe;
+    color: #1b5faa;
+}
+
+/* Action buttons inline group */
+.action-group {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+}
+
+/* Empty state */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 48px 24px;
+}
+
+.empty-icon {
+    opacity: 0.4;
+}
+
+/* Options section */
+.options-section {
+    border-radius: 6px;
+    padding: 16px;
+}
+
+.options-heading {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #706e6b;
+    letter-spacing: 0.06em;
+    margin-bottom: 12px;
+}
+
+/* Table container — allow horizontal scroll on narrow screens */
+.table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}

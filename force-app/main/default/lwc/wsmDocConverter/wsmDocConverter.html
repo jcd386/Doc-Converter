@@ -1,0 +1,204 @@
+<template>
+    <!-- Loading Spinner -->
+    <template lwc:if={isLoading}>
+        <div class="slds-p-around_large slds-text-align_center">
+            <lightning-spinner alternative-text="Loading documents" size="medium"></lightning-spinner>
+        </div>
+    </template>
+
+    <!-- Main Card (rendered after load completes) -->
+    <template lwc:else>
+        <div class="slds-card converter-card">
+
+            <!-- Card Header -->
+            <div class="slds-card__header slds-grid">
+                <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                    <div class="slds-media__figure slds-media__figure_fixed-width slds-align_absolute-center">
+                        <lightning-icon icon-name="doctype:pdf" size="small" alternative-text="Document Converter"></lightning-icon>
+                    </div>
+                    <div class="slds-media__body">
+                        <h2 class="slds-card__header-title">
+                            <span>Document Converter</span>
+                            <template lwc:if={hasDocuments}>
+                                <lightning-badge label={documentCountLabel} class="slds-m-left_small"></lightning-badge>
+                            </template>
+                        </h2>
+                        <p class="slds-text-body_small slds-text-color_weak">Reorder or remove files, then configure output options below</p>
+                    </div>
+                </header>
+            </div>
+
+            <div class="slds-card__body slds-card__body_inner">
+
+                <!-- Error Banner -->
+                <template lwc:if={errorMessage}>
+                    <div class="slds-notify slds-notify_alert slds-alert_error slds-m-bottom_medium" role="alert">
+                        <span class="slds-assistive-text">Error</span>
+                        <lightning-icon icon-name="utility:error" size="x-small" class="slds-m-right_x-small" alternative-text="Error"></lightning-icon>
+                        <h2>{errorMessage}</h2>
+                    </div>
+                </template>
+
+                <!-- Document Table -->
+                <template lwc:if={hasDocuments}>
+                    <div class="table-container slds-m-bottom_medium">
+                        <table
+                            class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_fixed-layout"
+                            aria-label="Documents to convert">
+                            <thead>
+                                <tr class="slds-line-height_reset">
+                                    <th scope="col" class="col-position">
+                                        <div class="slds-truncate" title="#">#</div>
+                                    </th>
+                                    <th scope="col" class="col-document">
+                                        <div class="slds-truncate" title="Document">Document</div>
+                                    </th>
+                                    <th scope="col" class="col-type">
+                                        <div class="slds-truncate" title="Type">Type</div>
+                                    </th>
+                                    <th scope="col" class="col-size">
+                                        <div class="slds-truncate" title="Size">Size</div>
+                                    </th>
+                                    <th scope="col" class="col-actions">
+                                        <div class="slds-truncate" title="Actions">Actions</div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={documents} for:item="doc" for:index="idx">
+                                    <tr key={doc.contentDocumentId} class="slds-hint-parent doc-row">
+
+                                        <!-- Position -->
+                                        <td class="col-position position-cell">
+                                            <span class="position-badge">{doc.position}</span>
+                                        </td>
+
+                                        <!-- Document Title -->
+                                        <td class="col-document">
+                                            <div class="slds-media slds-media_center">
+                                                <div class="slds-media__figure slds-media__figure_fixed-width slds-align_absolute-center">
+                                                    <template lwc:if={doc.isPdf}>
+                                                        <lightning-icon icon-name="doctype:pdf" size="x-small" alternative-text="PDF"></lightning-icon>
+                                                    </template>
+                                                    <template lwc:else>
+                                                        <lightning-icon icon-name="doctype:unknown" size="x-small" alternative-text="Document"></lightning-icon>
+                                                    </template>
+                                                </div>
+                                                <div class="slds-media__body">
+                                                    <div class="slds-truncate" title={doc.title}>{doc.title}</div>
+                                                </div>
+                                            </div>
+                                        </td>
+
+                                        <!-- Type / Conversion Label -->
+                                        <td class="col-type">
+                                            <template lwc:if={doc.isPdf}>
+                                                <span class="type-pill type-pill_pdf">{doc.typeLabel}</span>
+                                            </template>
+                                            <template lwc:else>
+                                                <span class="type-pill type-pill_convert">{doc.typeLabel}</span>
+                                            </template>
+                                        </td>
+
+                                        <!-- Size -->
+                                        <td class="col-size size-cell">
+                                            {doc.formattedSize}
+                                        </td>
+
+                                        <!-- Actions -->
+                                        <td class="col-actions">
+                                            <div class="action-group">
+                                                <lightning-button-icon
+                                                    icon-name="utility:arrowup"
+                                                    alternative-text="Move up"
+                                                    title="Move up"
+                                                    size="small"
+                                                    class="slds-m-right_xx-small"
+                                                    onclick={handleMoveUp}
+                                                    data-index={idx}
+                                                    disabled={doc.isFirst}>
+                                                </lightning-button-icon>
+                                                <lightning-button-icon
+                                                    icon-name="utility:arrowdown"
+                                                    alternative-text="Move down"
+                                                    title="Move down"
+                                                    size="small"
+                                                    class="slds-m-right_xx-small"
+                                                    onclick={handleMoveDown}
+                                                    data-index={idx}
+                                                    disabled={doc.isLast}>
+                                                </lightning-button-icon>
+                                                <lightning-button-icon
+                                                    icon-name="utility:delete"
+                                                    alternative-text="Remove document"
+                                                    title="Remove"
+                                                    size="small"
+                                                    variant="bare"
+                                                    onclick={handleRemoveDocument}
+                                                    data-index={idx}>
+                                                </lightning-button-icon>
+                                            </div>
+                                        </td>
+
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </template>
+
+                <!-- Empty State -->
+                <template lwc:if={isEmpty}>
+                    <div class="empty-state slds-p-around_large slds-text-align_center">
+                        <lightning-icon icon-name="utility:file" size="large" class="empty-icon" alternative-text="No documents"></lightning-icon>
+                        <h3 class="slds-text-heading_small slds-m-top_small">No documents provided</h3>
+                        <p class="slds-text-body_regular slds-text-color_weak slds-m-top_x-small">
+                            Pass Content Document IDs to this component via the Flow to begin converting files.
+                        </p>
+                    </div>
+                </template>
+
+                <!-- Options Section (only when there are documents) -->
+                <template lwc:if={hasDocuments}>
+                    <div class="options-section slds-box slds-theme_shade slds-m-top_small">
+                        <h3 class="options-heading slds-text-title_caps slds-m-bottom_small">Output Options</h3>
+
+                        <!-- Output Filename -->
+                        <lightning-input
+                            type="text"
+                            label="Output File Name"
+                            value={editableFileName}
+                            required
+                            onchange={handleFileNameChange}
+                            class="slds-m-bottom_small"
+                            field-level-help="The filename for the converted PDF output. A .pdf extension is added automatically if omitted.">
+                        </lightning-input>
+
+                        <!-- Merge Checkbox (only when multiple docs) -->
+                        <template lwc:if={showMergeOptions}>
+                            <lightning-input
+                                type="checkbox"
+                                label="Merge all files into one PDF"
+                                checked={_mergeFiles}
+                                onchange={handleMergeChange}
+                                class="slds-m-bottom_x-small">
+                            </lightning-input>
+                        </template>
+
+                        <!-- Upload Individual (only when merging + multiple docs) -->
+                        <template lwc:if={showUploadIndividualOption}>
+                            <lightning-input
+                                type="checkbox"
+                                label="Also upload individual converted PDFs"
+                                checked={_uploadIndividual}
+                                onchange={handleUploadIndividualChange}
+                                class="slds-m-bottom_x-small">
+                            </lightning-input>
+                        </template>
+                    </div>
+                </template>
+
+            </div>
+        </div>
+    </template>
+</template>

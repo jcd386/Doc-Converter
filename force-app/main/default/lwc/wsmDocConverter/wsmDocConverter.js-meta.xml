@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>66.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>Document Converter</masterLabel>
+    <description>Select, reorder, and configure document conversion options</description>
+    <targets>
+        <target>lightning__FlowScreen</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__FlowScreen">
+            <property name="contentDocumentIds" type="String[]" label="Content Document Ids"
+                      description="Collection of ContentDocumentIds to display" role="inputOnly" />
+            <property name="recordId" type="String" label="Record Id"
+                      description="Parent record Id for context" role="inputOnly" />
+            <property name="apiKey" type="String" label="API Key"
+                      description="API key for the doc converter service" role="inputOnly" />
+            <property name="endpointUrl" type="String" label="Endpoint URL"
+                      description="Base URL of the doc converter service" role="inputOnly" />
+            <property name="sfClientId" type="String" label="SF Client ID"
+                      description="Connected App Consumer Key for API access" role="inputOnly" />
+            <property name="sfClientSecret" type="String" label="SF Client Secret"
+                      description="Connected App Consumer Secret for API access" role="inputOnly" />
+            <property name="orderedContentDocumentIds" type="String[]" label="Ordered Content Document Ids"
+                      description="ContentDocumentIds in user-specified order" role="outputOnly" />
+            <property name="outputFileName" type="String" label="Output File Name"
+                      description="User-entered filename for the output PDF" role="outputOnly" />
+            <property name="mergeFiles" type="Boolean" label="Merge Files"
+                      description="Whether to merge all files into one PDF" role="outputOnly" />
+            <property name="uploadIndividual" type="Boolean" label="Upload Individual"
+                      description="Whether to upload individual converted PDFs" role="outputOnly" />
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>
