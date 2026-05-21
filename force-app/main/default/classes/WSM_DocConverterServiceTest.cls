@@ -137,11 +137,75 @@ public class WSM_DocConverterServiceTest {
         System.assertEquals(false, (Boolean) parsed.get('upload_individual'));
     }
 
+    @IsTest
+    static void testValidateIntegrationAccessSuccess() {
+        Test.setMock(HttpCalloutMock.class, new ValidateAccessMock(true));
+
+        Test.startTest();
+        String result = WSM_DocConverterService.validateIntegrationAccess(
+            'test-client-id', 'test-client-secret',
+            new List<String>{ '069000000000001' }
+        );
+        Test.stopTest();
+
+        System.assertEquals(null, result, 'Should return null when all docs are visible');
+    }
+
+    @IsTest
+    static void testValidateIntegrationAccessNoRecords() {
+        Test.setMock(HttpCalloutMock.class, new ValidateAccessMock(false));
+
+        Test.startTest();
+        String result = WSM_DocConverterService.validateIntegrationAccess(
+            'test-client-id', 'test-client-secret',
+            new List<String>{ '069000000000001' }
+        );
+        Test.stopTest();
+
+        System.assert(result != null, 'Should return warning when docs are not visible');
+        System.assert(result.contains('does not have access'), 'Should mention access issue');
+    }
+
+    @IsTest
+    static void testValidateIntegrationAccessEmpty() {
+        Test.startTest();
+        String result = WSM_DocConverterService.validateIntegrationAccess(
+            'test-client-id', 'test-client-secret',
+            new List<String>()
+        );
+        Test.stopTest();
+
+        System.assertEquals(null, result, 'Empty list should return null');
+    }
+
     private class OAuthMock implements HttpCalloutMock {
         public HttpResponse respond(HttpRequest req) {
             HttpResponse res = new HttpResponse();
             res.setStatusCode(200);
             res.setBody('{"access_token":"mock-access-token-xyz","instance_url":"https://test.salesforce.com","token_type":"Bearer"}');
+            return res;
+        }
+    }
+
+    private class ValidateAccessMock implements HttpCalloutMock {
+        private Boolean returnRecords;
+
+        ValidateAccessMock(Boolean returnRecords) {
+            this.returnRecords = returnRecords;
+        }
+
+        public HttpResponse respond(HttpRequest req) {
+            HttpResponse res = new HttpResponse();
+            res.setStatusCode(200);
+            if (req.getEndpoint().contains('/oauth2/token')) {
+                res.setBody('{"access_token":"mock-access-token-xyz","instance_url":"https://test.salesforce.com","token_type":"Bearer"}');
+            } else {
+                if (this.returnRecords) {
+                    res.setBody('{"totalSize":1,"done":true,"records":[{"ContentDocumentId":"069000000000001"}]}');
+                } else {
+                    res.setBody('{"totalSize":0,"done":true,"records":[]}');
+                }
+            }
             return res;
         }
     }

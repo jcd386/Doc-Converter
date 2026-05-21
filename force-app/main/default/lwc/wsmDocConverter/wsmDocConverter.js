@@ -1,5 +1,6 @@
 import { LightningElement, api, track } from 'lwc';
 import getDocumentInfo from '@salesforce/apex/WSM_DocConverterService.getDocumentInfo';
+import validateIntegrationAccess from '@salesforce/apex/WSM_DocConverterService.validateIntegrationAccess';
 
 export default class WsmDocConverter extends LightningElement {
     // Flow Screen Inputs
@@ -15,14 +16,17 @@ export default class WsmDocConverter extends LightningElement {
     @api outputFileName = 'Converted Documents.pdf';
     @api mergeFiles = false;
     @api uploadIndividual = false;
+    @api deleteOriginals = false;
 
     // Internal State
     @track documents = [];
     isLoading = true;
     errorMessage = '';
+    accessWarning = '';
     editableFileName = 'Converted Documents.pdf';
     _mergeFiles = true;
     _uploadIndividual = false;
+    _deleteOriginals = false;
 
     async connectedCallback() {
         this.editableFileName = this.outputFileName || 'Converted Documents.pdf';
@@ -52,10 +56,26 @@ export default class WsmDocConverter extends LightningElement {
                 formattedSize: this._formatSize(info.contentSize)
             }));
             this._syncOutputs();
+            this._validateAccess(ids);
         } catch (error) {
             this.errorMessage = this._extractError(error);
         } finally {
             this.isLoading = false;
+        }
+    }
+
+    async _validateAccess(ids) {
+        try {
+            const warning = await validateIntegrationAccess({
+                sfClientId: this.sfClientId,
+                sfClientSecret: this.sfClientSecret,
+                contentDocumentIds: ids
+            });
+            if (warning) {
+                this.accessWarning = warning;
+            }
+        } catch (error) {
+            this.accessWarning = 'Unable to verify integration access: ' + this._extractError(error);
         }
     }
 
@@ -115,6 +135,11 @@ export default class WsmDocConverter extends LightningElement {
         this._syncOutputs();
     }
 
+    handleDeleteOriginalsChange(event) {
+        this._deleteOriginals = event.target.checked;
+        this._syncOutputs();
+    }
+
     // --- Output Sync ---
     _syncOutputs() {
         this.orderedContentDocumentIds = this.documents.map(d => d.contentDocumentId);
@@ -126,6 +151,7 @@ export default class WsmDocConverter extends LightningElement {
 
         this.mergeFiles = this._mergeFiles;
         this.uploadIndividual = this._uploadIndividual;
+        this.deleteOriginals = this._deleteOriginals;
     }
 
     // --- Helpers ---

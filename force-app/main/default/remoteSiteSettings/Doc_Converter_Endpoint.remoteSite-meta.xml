@@ -2,6 +2,6 @@
 <RemoteSiteSetting xmlns="http://soap.sforce.com/2006/04/metadata">
     <disableProtocolSecurity>false</disableProtocolSecurity>
     <isActive>true</isActive>
-    <url>https://YOUR-ENDPOINT-URL-HERE</url>
-    <description>Doc converter service endpoint (replace with your actual URL)</description>
+    <url>https://wsm-tools--doc-converter-doc-converter-web.modal.run</url>
+    <description>Modal.com doc converter service endpoint</description>
 </RemoteSiteSetting>

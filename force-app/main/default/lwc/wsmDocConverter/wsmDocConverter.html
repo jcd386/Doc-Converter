@@ -39,6 +39,15 @@
                     </div>
                 </template>
 
+                <!-- Access Warning -->
+                <template lwc:if={accessWarning}>
+                    <div class="slds-notify slds-notify_alert slds-alert_warning slds-m-bottom_medium" role="alert">
+                        <span class="slds-assistive-text">Warning</span>
+                        <lightning-icon icon-name="utility:warning" size="x-small" class="slds-m-right_x-small" alternative-text="Warning"></lightning-icon>
+                        <h2>{accessWarning}</h2>
+                    </div>
+                </template>
+
                 <!-- Document Table -->
                 <template lwc:if={hasDocuments}>
                     <div class="table-container slds-m-bottom_medium">
@@ -195,6 +204,16 @@
                                 class="slds-m-bottom_x-small">
                             </lightning-input>
                         </template>
+
+                        <!-- Delete Originals -->
+                        <lightning-input
+                            type="checkbox"
+                            label="Delete original files after conversion"
+                            checked={_deleteOriginals}
+                            onchange={handleDeleteOriginalsChange}
+                            class="slds-m-bottom_x-small"
+                            field-level-help="Remove the original non-PDF files from this record after conversion is complete. PDF files that did not need conversion will not be deleted.">
+                        </lightning-input>
                     </div>
                 </template>
 

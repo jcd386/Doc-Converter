@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomPermission xmlns="http://soap.sforce.com/2006/04/metadata">
-    <label>WSM Doc Converter Access</label>
     <description>Grants access to the WSM Doc Converter tool for converting and merging documents to PDF</description>
     <isLicensed>false</isLicensed>
+    <label>WSM Doc Converter Access</label>
 </CustomPermission>

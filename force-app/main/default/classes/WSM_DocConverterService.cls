@@ -72,6 +72,53 @@ public with sharing class WSM_DocConverterService {
         return results;
     }
 
+    @AuraEnabled
+    public static String validateIntegrationAccess(String sfClientId, String sfClientSecret, List<String> contentDocumentIds) {
+        if (contentDocumentIds == null || contentDocumentIds.isEmpty()) {
+            return null;
+        }
+
+        String accessToken;
+        try {
+            accessToken = getOAuthToken(sfClientId, sfClientSecret);
+        } catch (Exception e) {
+            return 'Unable to authenticate the integration user. Please ask your administrator to verify the External Client App credentials and the WSM Doc Converter API permission set. (' + e.getMessage() + ')';
+        }
+
+        String baseUrl = URL.getOrgDomainUrl().toExternalForm() + '/services/data/v63.0';
+        List<String> escaped = new List<String>();
+        for (String docId : contentDocumentIds) {
+            escaped.add(String.escapeSingleQuotes(docId));
+        }
+        String soql = 'SELECT ContentDocumentId FROM ContentVersion'
+            + ' WHERE ContentDocumentId IN (\'' + String.join(escaped, '\',\'') + '\')'
+            + ' AND IsLatest = true';
+
+        HttpRequest req = new HttpRequest();
+        req.setEndpoint(baseUrl + '/query?q=' + EncodingUtil.urlEncode(soql, 'UTF-8'));
+        req.setMethod('GET');
+        req.setHeader('Authorization', 'Bearer ' + accessToken);
+        req.setTimeout(15000);
+
+        HttpResponse res = new Http().send(req);
+        if (res.getStatusCode() != 200) {
+            return 'The integration user cannot query files (HTTP ' + res.getStatusCode() + '). Please ask your administrator to update the WSM Doc Converter API permission set.';
+        }
+
+        Map<String, Object> body = (Map<String, Object>) JSON.deserializeUntyped(res.getBody());
+        List<Object> records = (List<Object>) body.get('records');
+        Integer visible = records != null ? records.size() : 0;
+
+        if (visible == 0) {
+            return 'The integration user does not have access to the selected files. Please ask your administrator to update the WSM Doc Converter API permission set to include read access to the records these files are attached to.';
+        }
+        if (visible < contentDocumentIds.size()) {
+            return visible + ' of ' + contentDocumentIds.size() + ' files are accessible to the integration user. Some files may fail to convert. Please ask your administrator to update the WSM Doc Converter API permission set.';
+        }
+
+        return null;
+    }
+
     @InvocableMethod(
         label='Build Doc Converter Request'
         description='Gets an API access token via Connected App, then builds the JSON request for the Modal doc converter'

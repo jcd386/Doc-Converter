@@ -197,7 +197,7 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Success_Screen</targetReference>
+                <targetReference>Should_Delete_Originals</targetReference>
             </connector>
             <label>Success</label>
         </rules>
@@ -227,6 +227,31 @@
             <label>Yes, Has Files</label>
         </rules>
     </decisions>
+    <decisions>
+        <name>Should_Delete_Originals</name>
+        <label>Should Delete Originals?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Success_Screen</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Keep Originals</defaultConnectorLabel>
+        <rules>
+            <name>Yes_Delete</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>varDeleteOriginals</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Delete_Original_Files</targetReference>
+            </connector>
+            <label>Yes, Delete</label>
+        </rules>
+    </decisions>
     <environments>Default</environments>
     <interviewLabel>WSM - SCR - Convert Documents {!$Flow.CurrentDateTime}</interviewLabel>
     <label>WSM - SCR - Convert Documents</label>
@@ -249,6 +274,28 @@
         </value>
     </processMetadataValues>
     <processType>Flow</processType>
+    <recordDeletes>
+        <name>Delete_Original_Files</name>
+        <label>Delete Original Files</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Success_Screen</targetReference>
+        </connector>
+        <faultConnector>
+            <isGoTo>true</isGoTo>
+            <targetReference>Error_Screen</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>In</operator>
+            <value>
+                <elementReference>varOrderedDocIds</elementReference>
+            </value>
+        </filters>
+        <object>ContentDocument</object>
+    </recordDeletes>
     <recordLookups>
         <name>Get_Content_Documents</name>
         <label>Get Content Documents</label>
@@ -383,6 +430,10 @@
             <outputParameters>
                 <assignToReference>varUploadIndividual</assignToReference>
                 <name>uploadIndividual</name>
+            </outputParameters>
+            <outputParameters>
+                <assignToReference>varDeleteOriginals</assignToReference>
+                <name>deleteOriginals</name>
             </outputParameters>
             <styleProperties>
                 <verticalAlignment>
@@ -621,6 +672,9 @@
         <isCollection>false</isCollection>
         <isInput>false</isInput>
         <isOutput>false</isOutput>
+        <value>
+            <stringValue>YOUR_API_KEY</stringValue>
+        </value>
     </variables>
     <variables>
         <name>varCalloutEndpointUrl</name>
@@ -630,11 +684,24 @@
         <isOutput>false</isOutput>
     </variables>
     <variables>
+        <name>varDeleteOriginals</name>
+        <dataType>Boolean</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value>
+            <booleanValue>false</booleanValue>
+        </value>
+    </variables>
+    <variables>
         <name>varEndpointUrl</name>
         <dataType>String</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>
         <isOutput>false</isOutput>
+        <value>
+            <stringValue>https://wsm-tools--doc-converter-doc-converter-web.modal.run</stringValue>
+        </value>
     </variables>
     <variables>
         <name>varErrorMessage</name>
@@ -701,6 +768,9 @@
         <isCollection>false</isCollection>
         <isInput>false</isInput>
         <isOutput>false</isOutput>
+        <value>
+            <stringValue>YOUR_SF_CLIENT_ID</stringValue>
+        </value>
     </variables>
     <variables>
         <name>varSfClientSecret</name>
@@ -708,6 +778,9 @@
         <isCollection>false</isCollection>
         <isInput>false</isInput>
         <isOutput>false</isOutput>
+        <value>
+            <stringValue>YOUR_SF_CLIENT_SECRET</stringValue>
+        </value>
     </variables>
     <variables>
         <name>varUploadIndividual</name>

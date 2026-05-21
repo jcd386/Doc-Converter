@@ -29,6 +29,8 @@
                       description="Whether to merge all files into one PDF" role="outputOnly" />
             <property name="uploadIndividual" type="Boolean" label="Upload Individual"
                       description="Whether to upload individual converted PDFs" role="outputOnly" />
+            <property name="deleteOriginals" type="Boolean" label="Delete Originals"
+                      description="Whether to delete original non-PDF files after conversion" role="outputOnly" />
         </targetConfig>
     </targetConfigs>
 </LightningComponentBundle>
