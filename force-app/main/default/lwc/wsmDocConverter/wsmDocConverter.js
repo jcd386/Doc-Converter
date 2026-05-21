@@ -10,6 +10,7 @@ export default class WsmDocConverter extends LightningElement {
     @api endpointUrl;
     @api sfClientId;
     @api sfClientSecret;
+    @api hideDeleteOriginals = false;
 
     // Flow Screen Outputs
     @api orderedContentDocumentIds = [];
@@ -87,6 +88,7 @@ export default class WsmDocConverter extends LightningElement {
     }
     get showMergeOptions() { return this.documents.length > 1; }
     get showUploadIndividualOption() { return this._mergeFiles && this.documents.length > 1; }
+    get showDeleteOption() { return this.hideDeleteOriginals !== true; }
 
     // --- Reorder Handlers ---
     handleMoveUp(event) {

@@ -206,14 +206,16 @@
                         </template>
 
                         <!-- Delete Originals -->
-                        <lightning-input
-                            type="checkbox"
-                            label="Delete original files after conversion"
-                            checked={_deleteOriginals}
-                            onchange={handleDeleteOriginalsChange}
-                            class="slds-m-bottom_x-small"
-                            field-level-help="Remove the original non-PDF files from this record after conversion is complete. PDF files that did not need conversion will not be deleted.">
-                        </lightning-input>
+                        <template lwc:if={showDeleteOption}>
+                            <lightning-input
+                                type="checkbox"
+                                label="Delete original files after conversion"
+                                checked={_deleteOriginals}
+                                onchange={handleDeleteOriginalsChange}
+                                class="slds-m-bottom_x-small"
+                                field-level-help="Remove the original non-PDF files from this record after conversion is complete. PDF files that did not need conversion will not be deleted.">
+                            </lightning-input>
+                        </template>
                     </div>
                 </template>
 

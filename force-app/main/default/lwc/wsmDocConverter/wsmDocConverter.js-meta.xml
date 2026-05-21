@@ -21,6 +21,8 @@
                       description="Connected App Consumer Key for API access" role="inputOnly" />
             <property name="sfClientSecret" type="String" label="SF Client Secret"
                       description="Connected App Consumer Secret for API access" role="inputOnly" />
+            <property name="hideDeleteOriginals" type="Boolean" label="Hide Delete Originals"
+                      description="Set to true to hide the delete original files checkbox" role="inputOnly" />
             <property name="orderedContentDocumentIds" type="String[]" label="Ordered Content Document Ids"
                       description="ContentDocumentIds in user-specified order" role="outputOnly" />
             <property name="outputFileName" type="String" label="Output File Name"
