@@ -7,9 +7,6 @@ export default class WsmDocConverter extends LightningElement {
     @api contentDocumentIds;
     @api recordId;
     @api apiKey;
-    @api endpointUrl;
-    @api sfClientId;
-    @api sfClientSecret;
     @api hideDeleteOriginals = false;
 
     // Flow Screen Outputs
@@ -68,8 +65,6 @@ export default class WsmDocConverter extends LightningElement {
     async _validateAccess(ids) {
         try {
             const warning = await validateIntegrationAccess({
-                sfClientId: this.sfClientId,
-                sfClientSecret: this.sfClientSecret,
                 contentDocumentIds: ids
             });
             if (warning) {

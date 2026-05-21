@@ -51,24 +51,6 @@
                 <elementReference>varApiKey</elementReference>
             </value>
         </inputParameters>
-        <inputParameters>
-            <name>endpointUrl</name>
-            <value>
-                <elementReference>varEndpointUrl</elementReference>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>sfClientId</name>
-            <value>
-                <elementReference>varSfClientId</elementReference>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>sfClientSecret</name>
-            <value>
-                <elementReference>varSfClientSecret</elementReference>
-            </value>
-        </inputParameters>
         <nameSegment>WSM_DocConverterService</nameSegment>
         <offset>0</offset>
         <outputParameters>
@@ -395,24 +377,6 @@
                     <elementReference>varApiKey</elementReference>
                 </value>
             </inputParameters>
-            <inputParameters>
-                <name>endpointUrl</name>
-                <value>
-                    <elementReference>varEndpointUrl</elementReference>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>sfClientId</name>
-                <value>
-                    <elementReference>varSfClientId</elementReference>
-                </value>
-            </inputParameters>
-            <inputParameters>
-                <name>sfClientSecret</name>
-                <value>
-                    <elementReference>varSfClientSecret</elementReference>
-                </value>
-            </inputParameters>
             <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
             <isRequired>true</isRequired>
             <outputParameters>
@@ -694,16 +658,6 @@
         </value>
     </variables>
     <variables>
-        <name>varEndpointUrl</name>
-        <dataType>String</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-        <value>
-            <stringValue>https://wsm-tools--doc-converter-doc-converter-web.modal.run</stringValue>
-        </value>
-    </variables>
-    <variables>
         <name>varErrorMessage</name>
         <dataType>String</dataType>
         <isCollection>false</isCollection>
@@ -761,26 +715,6 @@
         <isCollection>false</isCollection>
         <isInput>false</isInput>
         <isOutput>false</isOutput>
-    </variables>
-    <variables>
-        <name>varSfClientId</name>
-        <dataType>String</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-        <value>
-            <stringValue>YOUR_SF_CLIENT_ID</stringValue>
-        </value>
-    </variables>
-    <variables>
-        <name>varSfClientSecret</name>
-        <dataType>String</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-        <value>
-            <stringValue>YOUR_SF_CLIENT_SECRET</stringValue>
-        </value>
     </variables>
     <variables>
         <name>varUploadIndividual</name>

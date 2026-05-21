@@ -70,8 +70,6 @@ public class WSM_DocConverterServiceTest {
 
     @IsTest
     static void testBuildRequest() {
-        Test.setMock(HttpCalloutMock.class, new OAuthMock());
-
         WSM_DocConverterService.RequestInput input = new WSM_DocConverterService.RequestInput();
         input.contentDocumentIds = new List<String>{ '069000000000001', '069000000000002' };
         input.parentRecordId = '001000000000001';
@@ -79,9 +77,6 @@ public class WSM_DocConverterServiceTest {
         input.mergeFiles = true;
         input.uploadIndividual = false;
         input.apiKey = 'test-api-key-123';
-        input.endpointUrl = 'https://example.modal.run';
-        input.sfClientId = 'test-client-id';
-        input.sfClientSecret = 'test-client-secret';
 
         Test.startTest();
         List<WSM_DocConverterService.RequestOutput> outputs =
@@ -93,7 +88,7 @@ public class WSM_DocConverterServiceTest {
 
         System.assertNotEquals(null, output.jsonBody, 'jsonBody should not be null');
         System.assertNotEquals(null, output.headersJson, 'headersJson should not be null');
-        System.assertEquals('https://example.modal.run', output.endpointUrl, 'endpointUrl should match input');
+        System.assertEquals('callout:WSM_Doc_Converter_Endpoint', output.endpointUrl, 'endpointUrl should use Named Credential');
 
         Map<String, Object> parsed = (Map<String, Object>) JSON.deserializeUntyped(output.jsonBody);
         System.assertEquals('001000000000001', (String) parsed.get('parent_record_id'));
@@ -101,7 +96,7 @@ public class WSM_DocConverterServiceTest {
         System.assertEquals(true, (Boolean) parsed.get('merge'));
         System.assertEquals(false, (Boolean) parsed.get('upload_individual'));
         System.assertEquals('63.0', (String) parsed.get('api_version'));
-        System.assertEquals('mock-access-token-xyz', (String) parsed.get('access_token'));
+        System.assertEquals(null, parsed.get('access_token'), 'access_token should not be in body');
 
         List<Object> docIds = (List<Object>) parsed.get('content_document_ids');
         System.assertEquals(2, docIds.size());
@@ -112,8 +107,6 @@ public class WSM_DocConverterServiceTest {
 
     @IsTest
     static void testBuildRequestDefaults() {
-        Test.setMock(HttpCalloutMock.class, new OAuthMock());
-
         WSM_DocConverterService.RequestInput input = new WSM_DocConverterService.RequestInput();
         input.contentDocumentIds = new List<String>{ '069000000000003' };
         input.parentRecordId = '001000000000002';
@@ -121,9 +114,6 @@ public class WSM_DocConverterServiceTest {
         input.mergeFiles = null;
         input.uploadIndividual = null;
         input.apiKey = 'test-key';
-        input.endpointUrl = 'https://example.modal.run';
-        input.sfClientId = 'test-client-id';
-        input.sfClientSecret = 'test-client-secret';
 
         Test.startTest();
         List<WSM_DocConverterService.RequestOutput> outputs =
@@ -143,7 +133,6 @@ public class WSM_DocConverterServiceTest {
 
         Test.startTest();
         String result = WSM_DocConverterService.validateIntegrationAccess(
-            'test-client-id', 'test-client-secret',
             new List<String>{ '069000000000001' }
         );
         Test.stopTest();
@@ -157,7 +146,6 @@ public class WSM_DocConverterServiceTest {
 
         Test.startTest();
         String result = WSM_DocConverterService.validateIntegrationAccess(
-            'test-client-id', 'test-client-secret',
             new List<String>{ '069000000000001' }
         );
         Test.stopTest();
@@ -170,21 +158,11 @@ public class WSM_DocConverterServiceTest {
     static void testValidateIntegrationAccessEmpty() {
         Test.startTest();
         String result = WSM_DocConverterService.validateIntegrationAccess(
-            'test-client-id', 'test-client-secret',
             new List<String>()
         );
         Test.stopTest();
 
         System.assertEquals(null, result, 'Empty list should return null');
-    }
-
-    private class OAuthMock implements HttpCalloutMock {
-        public HttpResponse respond(HttpRequest req) {
-            HttpResponse res = new HttpResponse();
-            res.setStatusCode(200);
-            res.setBody('{"access_token":"mock-access-token-xyz","instance_url":"https://test.salesforce.com","token_type":"Bearer"}');
-            return res;
-        }
     }
 
     private class ValidateAccessMock implements HttpCalloutMock {
@@ -197,14 +175,10 @@ public class WSM_DocConverterServiceTest {
         public HttpResponse respond(HttpRequest req) {
             HttpResponse res = new HttpResponse();
             res.setStatusCode(200);
-            if (req.getEndpoint().contains('/oauth2/token')) {
-                res.setBody('{"access_token":"mock-access-token-xyz","instance_url":"https://test.salesforce.com","token_type":"Bearer"}');
+            if (this.returnRecords) {
+                res.setBody('{"totalSize":1,"done":true,"records":[{"ContentDocumentId":"069000000000001"}]}');
             } else {
-                if (this.returnRecords) {
-                    res.setBody('{"totalSize":1,"done":true,"records":[{"ContentDocumentId":"069000000000001"}]}');
-                } else {
-                    res.setBody('{"totalSize":0,"done":true,"records":[]}');
-                }
+                res.setBody('{"totalSize":0,"done":true,"records":[]}');
             }
             return res;
         }

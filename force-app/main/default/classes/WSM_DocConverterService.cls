@@ -22,12 +22,6 @@ public with sharing class WSM_DocConverterService {
         public Boolean uploadIndividual;
         @InvocableVariable(required=true label='API Key')
         public String apiKey;
-        @InvocableVariable(required=true label='Endpoint URL')
-        public String endpointUrl;
-        @InvocableVariable(required=true label='SF Client ID')
-        public String sfClientId;
-        @InvocableVariable(required=true label='SF Client Secret')
-        public String sfClientSecret;
     }
 
     public class RequestOutput {
@@ -73,19 +67,11 @@ public with sharing class WSM_DocConverterService {
     }
 
     @AuraEnabled
-    public static String validateIntegrationAccess(String sfClientId, String sfClientSecret, List<String> contentDocumentIds) {
+    public static String validateIntegrationAccess(List<String> contentDocumentIds) {
         if (contentDocumentIds == null || contentDocumentIds.isEmpty()) {
             return null;
         }
 
-        String accessToken;
-        try {
-            accessToken = getOAuthToken(sfClientId, sfClientSecret);
-        } catch (Exception e) {
-            return 'Unable to authenticate the integration user. Please ask your administrator to verify the External Client App credentials and the WSM Doc Converter API permission set. (' + e.getMessage() + ')';
-        }
-
-        String baseUrl = URL.getOrgDomainUrl().toExternalForm() + '/services/data/v63.0';
         List<String> escaped = new List<String>();
         for (String docId : contentDocumentIds) {
             escaped.add(String.escapeSingleQuotes(docId));
@@ -95,9 +81,8 @@ public with sharing class WSM_DocConverterService {
             + ' AND IsLatest = true';
 
         HttpRequest req = new HttpRequest();
-        req.setEndpoint(baseUrl + '/query?q=' + EncodingUtil.urlEncode(soql, 'UTF-8'));
+        req.setEndpoint('callout:WSM_Doc_Converter_SF/services/data/v63.0/query?q=' + EncodingUtil.urlEncode(soql, 'UTF-8'));
         req.setMethod('GET');
-        req.setHeader('Authorization', 'Bearer ' + accessToken);
         req.setTimeout(15000);
 
         HttpResponse res = new Http().send(req);
@@ -121,19 +106,15 @@ public with sharing class WSM_DocConverterService {
 
     @InvocableMethod(
         label='Build Doc Converter Request'
-        description='Gets an API access token via Connected App, then builds the JSON request for the Modal doc converter'
+        description='Builds the JSON request for the doc converter using Named Credentials for authentication'
         category='Integration'
-        callout=true
     )
     public static List<RequestOutput> buildRequest(List<RequestInput> inputs) {
         RequestInput input = inputs[0];
 
-        String accessToken = getOAuthToken(input.sfClientId, input.sfClientSecret);
-
         Map<String, Object> body = new Map<String, Object>();
         body.put('content_document_ids', input.contentDocumentIds);
         body.put('instance_url', URL.getOrgDomainUrl().toExternalForm());
-        body.put('access_token', accessToken);
         body.put('parent_record_id', input.parentRecordId);
         body.put('output_filename', input.outputFileName != null ? input.outputFileName : 'Merged Package.pdf');
         body.put('merge', input.mergeFiles != null ? input.mergeFiles : true);
@@ -143,30 +124,8 @@ public with sharing class WSM_DocConverterService {
         RequestOutput output = new RequestOutput();
         output.jsonBody = JSON.serialize(body);
         output.headersJson = '[{"key":"X-API-Key","value":"' + input.apiKey + '"},{"key":"Content-Type","value":"application/json"}]';
-        output.endpointUrl = input.endpointUrl;
+        output.endpointUrl = 'callout:WSM_Doc_Converter_Endpoint';
 
         return new List<RequestOutput>{ output };
-    }
-
-    private static String getOAuthToken(String clientId, String clientSecret) {
-        HttpRequest req = new HttpRequest();
-        req.setEndpoint(URL.getOrgDomainUrl().toExternalForm() + '/services/oauth2/token');
-        req.setMethod('POST');
-        req.setHeader('Content-Type', 'application/x-www-form-urlencoded');
-        req.setBody(
-            'grant_type=client_credentials' +
-            '&client_id=' + EncodingUtil.urlEncode(clientId, 'UTF-8') +
-            '&client_secret=' + EncodingUtil.urlEncode(clientSecret, 'UTF-8')
-        );
-
-        HttpResponse res = new Http().send(req);
-        if (res.getStatusCode() != 200) {
-            throw new AuraHandledException(
-                'OAuth token request failed (HTTP ' + res.getStatusCode() + '): ' + res.getBody()
-            );
-        }
-
-        Map<String, Object> tokenResponse = (Map<String, Object>) JSON.deserializeUntyped(res.getBody());
-        return (String) tokenResponse.get('access_token');
     }
 }

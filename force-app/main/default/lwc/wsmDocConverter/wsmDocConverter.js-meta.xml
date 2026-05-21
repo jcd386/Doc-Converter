@@ -15,12 +15,6 @@
                       description="Parent record Id for context" role="inputOnly" />
             <property name="apiKey" type="String" label="API Key"
                       description="API key for the doc converter service" role="inputOnly" />
-            <property name="endpointUrl" type="String" label="Endpoint URL"
-                      description="Base URL of the doc converter service" role="inputOnly" />
-            <property name="sfClientId" type="String" label="SF Client ID"
-                      description="Connected App Consumer Key for API access" role="inputOnly" />
-            <property name="sfClientSecret" type="String" label="SF Client Secret"
-                      description="Connected App Consumer Secret for API access" role="inputOnly" />
             <property name="hideDeleteOriginals" type="Boolean" label="Hide Delete Originals"
                       description="Set to true to hide the delete original files checkbox" role="inputOnly" />
             <property name="orderedContentDocumentIds" type="String[]" label="Ordered Content Document Ids"

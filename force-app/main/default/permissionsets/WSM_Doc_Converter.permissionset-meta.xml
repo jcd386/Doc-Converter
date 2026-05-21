@@ -12,7 +12,11 @@
         <enabled>true</enabled>
         <name>WSM_Doc_Converter_Access</name>
     </customPermissions>
-    <description>Grants access to the WSM Doc Converter — Apex classes and custom permission</description>
+    <description>Grants access to the WSM Doc Converter — Apex classes, custom permission, and External Credential</description>
+    <externalCredentialPrincipalAccesses>
+        <enabled>true</enabled>
+        <externalCredentialPrincipal>WSM_Doc_Converter - WSM_Doc_Converter_Principal</externalCredentialPrincipal>
+    </externalCredentialPrincipalAccesses>
     <hasActivationRequired>false</hasActivationRequired>
     <label>WSM Doc Converter</label>
 </PermissionSet>
