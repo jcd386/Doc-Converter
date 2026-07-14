@@ -140,6 +140,10 @@ Success / Error Screen
 
 The Named Credential handles OAuth token management automatically. When `HttpCalloutService` calls `callout:WSM_Doc_Converter_Endpoint/convert-sf`, Salesforce auto-attaches the Bearer token as an Authorization header. The conversion API reads the token from the header to call back into Salesforce and download files.
 
+## Font Fidelity
+
+Office documents are converted by LibreOffice inside the service container, so output fidelity depends on the fonts installed in the image. The image ships with metric-compatible substitutes for the common Microsoft fonts: Liberation (Arial, Times New Roman, Courier New), **Carlito (Calibri)**, and **Caladea (Cambria)** — without Carlito, Calibri documents fall back to DejaVu Sans, which is ~10–15% wider and shifts line breaks/pagination. If converted PDFs show wrapped lines or extra pages vs. the source doc, check which fonts the PDF embeds (`grep -a '/BaseFont' out.pdf`) and add the missing font package to the service Dockerfile. `GET /health` returns the running service version.
+
 ## Files
 
 | File | Description |
